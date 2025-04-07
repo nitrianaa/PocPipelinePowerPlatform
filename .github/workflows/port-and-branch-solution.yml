@@ -3,24 +3,28 @@ name: export-and-branch-solution
 on:
   workflow_dispatch:
     inputs:
+      # Cambia únicamente este valor si hace falta
       solution_name:
-        description: 'Nombre de la solución'
+        description: 'Nombre de la solución en Power Platform'
         required: true
         default: PruebaPipeline
+      
+      # No cambiar estos valores
       solution_exported_folder:
-        description: 'Carpeta para la solución exportada'
+        description: 'Carpeta donde se guarda la solución exportada'
         required: true
         default: out/exported/
       solution_folder:
-        description: 'Carpeta para la solución desempaquetada'
+        description: 'Carpeta donde se desempaqueta la solución'
         required: true
         default: out/solutions/
       solution_target_folder:
-        description: 'Carpeta final en el repo'
+        description: 'Carpeta final que se incluirá en el repo'
         required: true
         default: solutions/
 
 env:
+  # Ajusta los valores a tu entorno
   ENVIRONMENT_URL: 'https://alvaro-dev-pp.crm2.dynamics.com/'
   CLIENT_ID: '5d6dc145-841c-46cc-9079-139330557b32'
   TENANT_ID: '025f3ef2-38d8-44ff-a071-678969af2e7c'
@@ -35,14 +39,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+        with:
+          lfs: true
 
       - name: Install Power Platform CLI (PAC)
-        uses: microsoft/powerplatform-actions/install@v1
+        uses: microsoft/powerplatform-actions/install@v0
         with:
+          # Cambia la versión si quieres algo específico (por ejemplo, '1.24.6')
           version: 'latest'
 
       - name: Who-am-I (Power Platform)
-        uses: microsoft/powerplatform-actions/who-am-i@v1
+        uses: microsoft/powerplatform-actions/who-am-i@v0
         with:
           environment-url: ${{ env.ENVIRONMENT_URL }}
           app-id: ${{ env.CLIENT_ID }}
@@ -50,7 +57,7 @@ jobs:
           tenant-id: ${{ env.TENANT_ID }}
 
       - name: Export solution from DEV
-        uses: microsoft/powerplatform-actions/export-solution@v1
+        uses: microsoft/powerplatform-actions/export-solution@v0
         with:
           environment-url: ${{ env.ENVIRONMENT_URL }}
           app-id: ${{ env.CLIENT_ID }}
@@ -60,7 +67,7 @@ jobs:
           solution-output-file: ${{ github.event.inputs.solution_exported_folder }}${{ github.event.inputs.solution_name }}.zip
 
       - name: Unpack solution
-        uses: microsoft/powerplatform-actions/unpack-solution@v1
+        uses: microsoft/powerplatform-actions/unpack-solution@v0
         with:
           solution-file: ${{ github.event.inputs.solution_exported_folder }}${{ github.event.inputs.solution_name }}.zip
           solution-folder: ${{ github.event.inputs.solution_folder }}${{ github.event.inputs.solution_name }}
@@ -68,7 +75,7 @@ jobs:
           overwrite-files: true
 
       - name: Create branch and commit changes
-        uses: microsoft/powerplatform-actions/branch-solution@v1
+        uses: microsoft/powerplatform-actions/branch-solution@v0
         with:
           solution-folder: ${{ github.event.inputs.solution_folder }}${{ github.event.inputs.solution_name }}
           solution-target-folder: ${{ github.event.inputs.solution_target_folder }}${{ github.event.inputs.solution_name }}
