@@ -3,28 +3,24 @@ name: export-and-branch-solution
 on:
   workflow_dispatch:
     inputs:
-      # Cambia únicamente este valor si hace falta
       solution_name:
-        description: 'Nombre de la solución en Power Platform'
+        description: 'Nombre de la solución'
         required: true
-        default: ALMLab
-      
-      # No cambiar estos valores
+        default: PruebaPipeline
       solution_exported_folder:
-        description: 'Carpeta para almacenar la solución exportada'
+        description: 'Carpeta para la solución exportada'
         required: true
         default: out/exported/
       solution_folder:
-        description: 'Carpeta para almacenar la solución desempaquetada'
+        description: 'Carpeta para la solución desempaquetada'
         required: true
         default: out/solutions/
       solution_target_folder:
-        description: 'Carpeta final que se incluirá en el repo'
+        description: 'Carpeta final en el repo'
         required: true
         default: solutions/
 
 env:
-  # Ajusta los valores a tu entorno
   ENVIRONMENT_URL: 'https://alvaro-dev-pp.crm2.dynamics.com/'
   CLIENT_ID: '5d6dc145-841c-46cc-9079-139330557b32'
   TENANT_ID: '025f3ef2-38d8-44ff-a071-678969af2e7c'
@@ -35,14 +31,15 @@ permissions:
 jobs:
   export-from-dev:
     runs-on: windows-latest
-    env:
-      RUNNER_DEBUG: 1
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Install Power Platform CLI (PAC)
+        uses: microsoft/powerplatform-actions/install@v1
         with:
-          lfs: true
+          version: 'latest'
 
       - name: Who-am-I (Power Platform)
         uses: microsoft/powerplatform-actions/who-am-i@v1
